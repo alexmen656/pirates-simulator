@@ -60,7 +60,7 @@ if ($method === 'POST') {
     $stmt->bind_param("isdd", $user_id, $name, $coordinate_x, $coordinate_y);
 
     if ($stmt->execute()) {
-        $message = "User $user_name has created a new ship called $name";
+        $message = "User $user_name has placed a new ship!";//"User $user_name has created a new ship called $name";
         $sql = "INSERT INTO chat_messages (author, message, type) VALUES ('System', '$message', 'system')";
         if ($conn->query($sql) === TRUE) {
             echo json_encode(['success' => 'Ship created successfully']);

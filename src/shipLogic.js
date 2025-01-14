@@ -69,3 +69,27 @@ export async function updateShipPrice() {
   const shipPrice = calculateShipPrice(shipCount);
   eventBus.emit("shipPriceUpdated", shipPrice);
 }
+
+export function updateShips() {
+  eventBus.emit("shipsUpdated");
+}
+
+export async function addShip(json) {
+  try {
+    const response = await axios.post(
+      "https://alex.polan.sk/pirates-simulator/ships.php",
+      json
+    );
+    if (response.data.success) {
+      console.log("Ship created successfully");
+      updateShips();
+      return true;
+    } else {
+      console.error("Failed to create ship:", response.data.message);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error creating ship:", error);
+    return false;
+  }
+}

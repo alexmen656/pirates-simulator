@@ -1,8 +1,9 @@
 <template>
   <div class="rang-list">
     <h2>
-      Top
-      <!--5 -->Pirates
+      <!-- Top
+     5 Pirates-->
+      {{ $t("ranglist") }}
     </h2>
     <ul>
       <li
@@ -20,8 +21,9 @@
     <div v-if="showMore" class="modal-overlay" @click.self="showMore = false">
       <div class="modal-content">
         <h2>
-          Top
-          <!--5 -->Pirates
+          <!-- Top
+          5 Pirates-->
+          {{ $t("ranglist") }}
         </h2>
         <ul>
           <li
@@ -35,8 +37,8 @@
         <button @click="showMore = false">Close</button>
       </div>
     </div>
-    <h4>
-      Language:
+    <h4 class="first">
+      {{ $t("language") }}:
       <span @click="changeLanguage('en')" :class="isActiveLanguage('en')"
         >EN</span
       >
@@ -50,7 +52,13 @@
       >
     </h4>
     <hr />
-    <h4>Music Credits</h4>
+    <h4 @click="openStatistics()">
+      Statistics <!--<span class="note">(New tab)</span>-->
+    </h4>
+    <hr />
+    <h4 @click="openCredits()">
+      Music Credits <span class="note">(New tab)</span>
+    </h4>
   </div>
 </template>
 
@@ -112,6 +120,12 @@ export default {
         console.error("Error fetching top users:", error);
       }
     },
+    openCredits() {
+      window.open("/credits", "_blank");
+    },
+    openStatistics(){
+      eventBus.emit("openStatistics");
+    }
   },
 };
 </script>
@@ -120,7 +134,7 @@ export default {
 .rang-list {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 6px; /*10*/
   transform: translateY(-50%);
   background-color: rgba(18, 18, 18, 0.7);
   padding: 10px;
@@ -132,8 +146,9 @@ export default {
 
 .rang-list h2 {
   position: relative;
-  margin: 0 0 10px;
-  font-size: 1.2em;
+  /*margin: 0 0 10px;*/
+  margin: 0;
+  font-size: 1.75em; /*1.2rem*/
   color: #fff;
   text-align: center;
 }
@@ -143,7 +158,7 @@ export default {
   list-style: none;
   padding: 0;
   margin: 0;
-  height: 12.5rem;
+  height: 13rem;
   max-height: 20rem;
   overflow: scroll;
 }
@@ -174,11 +189,15 @@ export default {
 
 .rang-list h4 {
   position: relative;
-  margin: 5px 0 0 0;
+  margin: 10px 0 0 0;
   padding: 0;
   color: #fff;
   text-align: center;
   cursor: pointer;
+}
+
+.rang-list h4.first {
+  margin: 20px 0 0 0;
 }
 
 .rang-list h5 {
@@ -249,5 +268,9 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.note {
+  font-size: 0.5rem;
 }
 </style>

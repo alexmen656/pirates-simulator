@@ -7,7 +7,7 @@
     </div>
     <div class="tooltip-container">
       <button class="place-boat-button">
-  <span>     +Ship ({{ formattedShipPrice }}$)</span> 
+  <span>     +{{ $t('ship') }} ({{ formattedShipPrice }}$)</span> 
         <!-- <img src="@/assets/boat-icon.png" alt="Place Boat" class="boat-icon" />-->
       </button>
       <span class="tooltip-text"

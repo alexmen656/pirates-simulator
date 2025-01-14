@@ -47,6 +47,10 @@ export default {
 </script>
 
 <style scoped>
+span {
+  margin-top: 3px;
+}
+
 .coin-count-container {
   display: flex;
   align-items: center;

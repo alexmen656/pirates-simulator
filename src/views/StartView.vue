@@ -5,8 +5,9 @@
       <div class="input-container">
         <input
           type="text"
+          maxlength="14"
           v-model="username"
-          placeholder="Enter your Username"
+          placeholder="Enter your Username (max 15 characters)"
         />
       </div>
       <div class="buttons">

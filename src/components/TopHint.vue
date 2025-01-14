@@ -37,7 +37,7 @@ export default {
       }
       this.displayedText = '';
       let index = 0;
-      const speed = 45; // Adjust typing speed here
+      const speed = 40; // Adjust typing speed here
       this.isTyping = true;
 
       const type = () => {
@@ -70,7 +70,7 @@ export default {
 
 .top-hint {
   background-color: rgba(0, 0, 0, 0.7);
-  border-radius: 12px;
+  border-radius: 16px;/*12px*/
   color: white;
   text-align: center;
   padding: 10px;

@@ -74,41 +74,75 @@ if ($method === 'POST') {
     $stmt->close();
     $conn->close();
 } elseif ($method === 'GET') {
-    $verification_id = $_GET['verification_id'] ?? '';
+    if (isset($_GET['getAllBases'])) {
+        $verification_id = $_GET['verification_id'] ?? '';
 
-    if (empty($verification_id)) {
-        echo json_encode(['error' => 'Verification ID is required']);
-        exit;
+        if (empty($verification_id)) {
+            echo json_encode(['error' => 'Verification ID is required']);
+            exit;
+        }
+
+        // Look up the user ID based on the verification ID
+        $stmt = $conn->prepare("SELECT id FROM users WHERE verification_id = ?");
+        $stmt->bind_param("s", $verification_id);
+        $stmt->execute();
+        $stmt->bind_result($user_id);
+        $stmt->fetch();
+        $stmt->close();
+
+        if (empty($user_id)) {
+            echo json_encode(['error' => 'Invalid verification ID']);
+            exit;
+        }
+
+        // Fetch all bases except the user's own bases
+        $stmt = $conn->prepare("SELECT bases.*, users.name as user_name FROM bases JOIN users ON bases.user_id = users.id WHERE bases.user_id != ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $bases = $result->fetch_all(MYSQLI_ASSOC);
+
+        echo json_encode(['success' => true, 'bases' => $bases]);
+
+        $stmt->close();
+        $conn->close();
+    } else {
+        // Existing GET logic
+        $verification_id = $_GET['verification_id'] ?? '';
+
+        if (empty($verification_id)) {
+            echo json_encode(['error' => 'Verification ID is required']);
+            exit;
+        }
+
+        // Look up the user ID based on the verification ID
+        $stmt = $conn->prepare("SELECT id FROM users WHERE verification_id = ?");
+        $stmt->bind_param("s", $verification_id);
+        $stmt->execute();
+        $stmt->bind_result($user_id);
+        $stmt->fetch();
+        $stmt->close();
+
+        if (empty($user_id)) {
+            echo json_encode(['error' => 'Invalid verification ID']);
+            exit;
+        }
+
+        $stmt = $conn->prepare("SELECT * FROM bases WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $bases = [];
+        while ($row = $result->fetch_assoc()) {
+            $bases[] = $row;
+        }
+
+        echo json_encode($bases);
+
+        $stmt->close();
+        $conn->close();
     }
-
-    // Look up the user ID based on the verification ID
-    $stmt = $conn->prepare("SELECT id FROM users WHERE verification_id = ?");
-    $stmt->bind_param("s", $verification_id);
-    $stmt->execute();
-    $stmt->bind_result($user_id);
-    $stmt->fetch();
-    $stmt->close();
-
-    if (empty($user_id)) {
-        echo json_encode(['error' => 'Invalid verification ID']);
-        exit;
-    }
-
-    // Retrieve the bases for the user
-    $stmt = $conn->prepare("SELECT * FROM bases WHERE user_id = ?");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $bases = [];
-    while ($row = $result->fetch_assoc()) {
-        $bases[] = $row;
-    }
-
-    echo json_encode($bases);
-
-    $stmt->close();
-    $conn->close();
 } else {
     echo json_encode(['error' => 'Invalid request method']);
 }
