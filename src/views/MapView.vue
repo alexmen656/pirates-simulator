@@ -5,13 +5,13 @@
       <!-- <p class="app-description">
             {{ $t("description") }}
           </p>-->
-      <!-- {{ hint }}-->
+      <TopHint v-if="hint" :hint="'...' + hint" />
     </header>
     <div id="map" style="width: 100%; height: 100vh"></div>
     <RangList class="rang-list" />
     <!--<div class="map-legend"></div>-->
     <LiveChat class="live-chat2" />
-    <BottomHint :hint="hint" />
+    <!--  <BottomHint :hint="hint" />-->
     <CoinCount class="coin-count-container" />
     <NewShip class="new-ship-container" />
   </div>
@@ -20,19 +20,24 @@
 <script>
 import RangList from "@/components/RangList.vue";
 import LiveChat from "@/components/LiveChat.vue";
-import BottomHint from "@/components/BottomHint.vue";
+//import BottomHint from "@/components/BottomHint.vue";
+import TopHint from "@/components/TopHint.vue";
 import CoinCount from "@/components/CoinCount.vue";
 import NewShip from "@/components/NewShip.vue";
 import goldCoordinates from "@/data/gold.json";
+import { getShipCount, calculateShipPrice, updateShipPrice } from "@/shipLogic";
+import { getCoinCount, addCoins, subtractCoins } from "@/coinLogic";
 import axios from "axios";
-import { eventBus } from "@/eventBus";
+
+//import { eventBus } from "@/eventBus";
 
 export default {
   name: "App",
   components: {
     RangList,
     LiveChat,
-    BottomHint,
+    //  BottomHint,
+    TopHint,
     CoinCount,
     NewShip,
   },
@@ -43,7 +48,9 @@ export default {
       blockNewCities: false,
     };
   },
-  mounted() {
+  async mounted() {
+    await getCoinCount();
+
     if (localStorage.getItem("language") === null) {
       localStorage.setItem("language", "en");
     }
@@ -78,13 +85,245 @@ export default {
         "HMS Defiant",
         "HMS Indefatigable",
         "HMS Invincible",
+        "Cutlass",
+        "Corsair",
+        "Buccaneer",
+        "Marauder",
+        "Scallywag",
+        "Plunderer",
+        "Sea Rover",
+        "Pirate's Pride",
+        "Neptune's Fury",
+        "Poseidon's Wrath",
+        "Kraken's Bane",
+        "Mermaid's Song",
+        "Davy Jones",
+        "Blackbeard's Revenge",
+        "Calypso's Curse",
+        "Siren's Call",
+        "Ghost Ship",
+        "Stormbringer",
+        "Wave Rider",
+        "Ocean's Wrath",
+        "Tidal Wave",
+        "Sea Phantom",
+        "Leviathan",
+        "Poseidon's Trident",
+        "Neptune's Spear",
+        "Sea Dragon",
+        "Ocean's Fury",
+        "Pirate's Plunder",
+        "Captain's Pride",
+        "Sailor's Delight",
+        "Treasure Hunter",
+        "Sea Hawk",
+        "Ocean Raider",
+        "Storm Chaser",
+        "Wind Rider",
+        "Sea Breeze",
+        "Ocean's Edge",
+        "Wave Breaker",
+        "Sea Witch",
+        "Black Widow",
+        "Crimson Tide",
+        "Silver Shark",
+        "Golden Treasure",
+        "Emerald Envy",
+        "Ruby Raider",
+        "Sapphire Storm",
+        "Diamond Dagger",
+        "Pearl Pirate",
+        "Ivory Invader",
+        "Obsidian Outlaw",
+        "Coral Corsair",
+        "Amber Assassin",
+        "Topaz Terror",
+        "Garnet Ghost",
+        "Onyx Overlord",
+        "Jade Jolly",
+        "Turquoise Tempest",
+        "Aquamarine Avenger",
+        "Moonstone Marauder",
+        "Sunstone Scourge",
+        "Meteorite Marauder",
+        "Starlight Stealer",
+        "Galactic Ghost",
+        "Cosmic Corsair",
+        "Nebula Navigator",
+        "Asteroid Avenger",
+        "Comet Chaser",
+        "Solar Sailor",
+        "Lunar Looter",
+        "Celestial Scourge",
+        "Eclipse Enforcer",
+        "Galaxy Guardian",
+        "Starship Stealer",
+        "Planet Plunderer",
+        "Astro Assassin",
+        "Space Scallywag",
+        "Rocket Raider",
+        "Alien Avenger",
+        "Martian Marauder",
+        "Venusian Vandal",
+        "Jovian Jolly",
+        "Saturnian Scourge",
+        "Uranian Usurper",
+        "Neptunian Navigator",
+        "Plutonian Pirate",
+        "Solar System Scourge",
+        "Interstellar Invader",
+        "Milky Way Marauder",
+        "Andromeda Avenger",
+        "Black Hole Buccaneer",
+        "Quasar Quester",
+        "Pulsar Plunderer",
+        "Supernova Stealer",
+        "Dark Matter Marauder",
+        "Event Horizon Enforcer",
+        "Singularity Scourge",
+        "Wormhole Warrior",
+        "Time Traveler",
+        "Dimension Drifter",
+        "Parallel Pirate",
+        "Quantum Quester",
+        "Multiverse Marauder",
+        "Infinity Invader",
+        "Eternal Explorer",
+        "Timeless Terror",
+        "Chrono Corsair",
+        "Temporal Tempest",
+        "Epoch Enforcer",
+        "Era Eradicator",
+        "Millennium Marauder",
+        "Century Corsair",
+        "Decade Destroyer",
+        "Yearling Yachter",
+        "Monthly Marauder",
+        "Weekly Wrecker",
+        "Daily Destroyer",
+        "Hourly Hunter",
+        "Minute Marauder",
+        "Second Stealer",
+        "Moment Marauder",
+        "Instant Invader",
+        "Flash Fighter",
+        "Blink Buccaneer",
+        "Glimpse Ghost",
+        "Spark Scourge",
+        "Flicker Fighter",
+        "Twinkle Terror",
+        "Shimmer Stealer",
+        "Gleam Ghost",
+        "Glow Guardian",
+        "Radiance Raider",
+        "Luminous Looter",
+        "Bright Buccaneer",
+        "Shine Stealer",
+        "Glitter Ghost",
+        "Sparkle Scourge",
+        "Dazzle Destroyer",
+        "Flashy Fighter",
+        "Brilliant Buccaneer",
+        "Vivid Vandal",
+        "Colorful Corsair",
+        "Rainbow Raider",
+        "Spectrum Stealer",
+        "Prism Pirate",
+        "Hue Hunter",
+        "Tint Terror",
+        "Shade Scourge",
+        "Tone Tempest",
+        "Pigment Plunderer",
+        "Chromatic Corsair",
+        "Iridescent Invader",
+        "Opalescent Outlaw",
+        "Pearlescent Pirate",
+        "Lustrous Looter",
+        "Shiny Scourge",
+        "Glossy Ghost",
+        "Polished Pirate",
+        "Sleek Stealer",
+        "Smooth Scourge",
+        "Silky Scourge",
+        "Velvet Vandal",
+        "Plush Pirate",
+        "Soft Scourge",
+        "Cushion Corsair",
+        "Pillow Plunderer",
+        "Feather Fighter",
+        "Downy Destroyer",
+        "Fluffy Fighter",
+        "Furry Fighter",
+        "Hairy Hunter",
+        "Woolly Warrior",
+        "Fuzzy Fighter",
+        "Cozy Corsair",
+        "Warm Warrior",
+        "Snug Scourge",
+        "Comfy Corsair",
+        "Relaxed Raider",
+        "Chill Corsair",
+        "Cool Corsair",
+        "Calm Corsair",
+        "Peaceful Pirate",
+        "Serene Scourge",
+        "Tranquil Tempest",
+        "Quiet Quester",
+        "Silent Stealer",
+        "Still Scourge",
+        "Motionless Marauder",
+        "Frozen Fighter",
+        "Icy Invader",
+        "Chilly Corsair",
+        "Cold Corsair",
+        "Frosty Fighter",
+        "Snowy Scourge",
+        "Winter Warrior",
+        "Arctic Avenger",
+        "Polar Pirate",
+        "Glacial Ghost",
+        "Iceberg Invader",
+        "Blizzard Buccaneer",
+        "Snowstorm Scourge",
+        "Avalanche Avenger",
+        "Frostbite Fighter",
+        "Icicle Invader",
+        "Snowflake Stealer",
       ];
       const randomIndex = Math.floor(Math.random() * names.length);
       return names[randomIndex];
     },
     async initMap() {
+      const baseRadiusStrokeOpacity = 1;
+      const baseRadiusLineWidth = 1;
+      const baseRadiusStrokeColor = "#0000FF";
+      const baseRadiusFillColor = "#0000FF";
+      const baseRadiusFillOpacity = 0.25;
+      const shipRadiusStrokeOpacity = 0.8;
+      const shipRadiusLineWidth = 2;
+      const shipRadiusStrokeColor = "#008000"; // replace toxic green(#00FF00) with normal green
+      const shipRadiusFillColor = "#008000"; // replace toxic green(#00FF00) with normal green
+      const shipRadiusFillOpacity = 0.35;
+
+      const baseStyle = new window.mapkit.Style({
+        fillColor: baseRadiusFillColor,
+        fillOpacity: baseRadiusFillOpacity,
+        strokeColor: baseRadiusStrokeColor,
+        strokeOpacity: baseRadiusStrokeOpacity,
+        lineWidth: baseRadiusLineWidth,
+      });
+
+      const shipStyle = new window.mapkit.Style({
+        fillColor: shipRadiusFillColor,
+        fillOpacity: shipRadiusFillOpacity,
+        strokeColor: shipRadiusStrokeColor,
+        strokeOpacity: shipRadiusStrokeOpacity,
+        lineWidth: shipRadiusLineWidth,
+      });
+
       var MarkerAnnotation = window.mapkit.MarkerAnnotation,
-        clickAnnotation;
+        clickAnnotation,
+        shipAnnotation;
       /*  var sfo = new window.mapkit.Coordinate(37.616934, -122.38379),
         work = new window.mapkit.Coordinate(37.3349, -122.0090201);*/
 
@@ -147,6 +386,7 @@ export default {
       let previewCircle2 = null;
       let previewCircle3 = null;
       let previewCircle4 = null;
+      let previewCircle5 = null;
 
       const verificationId = localStorage.getItem("verification_id");
       if (!verificationId) {
@@ -174,36 +414,67 @@ export default {
           const annotation = new window.mapkit.MarkerAnnotation(coordinate, {
             title: base.name,
             color: "#160808",
-            glyphText: "🏠",
+            glyphText: "☠️",
           });
           map.addAnnotation(annotation);
-
           const radiusInMeters = 2000000; // Beispielradius
           previewCircle2 = new window.mapkit.CircleOverlay(
             coordinate,
-            radiusInMeters,
-            {
-              fillColor: "#0000FF22", // Transparente Füllfarbe
-              strokeColor: "#0000FF", // Linienfarbe
-              lineWidth: 3, // Breite der Linie
-            }
+            radiusInMeters
           );
+          previewCircle2.style = baseStyle;
           map.addOverlay(previewCircle2);
+
+          // this.cities.push(annotation);
+        });
+
+        const ships_response = await this.$axios.get("ships.php", {
+          params: { verification_id: verificationId },
+        });
+
+        if (ships_response.data.error) {
+          console.error(ships_response.data.error);
+          this.$router.push("/");
+          return;
+        }
+
+        this.ships = ships_response.data;
+        this.ships.forEach((ship) => {
+          const coordinate = new window.mapkit.Coordinate(
+            Number(ship.coordinate_x),
+            Number(ship.coordinate_y)
+          );
+          const annotation = new window.mapkit.MarkerAnnotation(coordinate, {
+            title: ship.name,
+            color: "#160808",
+            glyphText: "⚓️",
+          });
+          map.addAnnotation(annotation);
+          const radiusInMeters = 1000000; // Beispielradius
+          previewCircle5 = new window.mapkit.CircleOverlay(
+            coordinate,
+            radiusInMeters
+          );
+          previewCircle5.style = shipStyle;
+          map.addOverlay(previewCircle5);
 
           // this.cities.push(annotation);
         });
       } catch (error) {
         console.error("Error fetching bases:", error);
-        // alert(3);
         //this.$router.push("/");
         return;
       }
 
-      // Mouse Move Event hinzufügen
+      /* document.querySelector(".mk-map-view").addEventListener("keydown", (event) => {
+        if (event.altKey) {
+          alert
+        }
+    });*/
+
       document
         .querySelector(".mk-map-view")
         .addEventListener("mousemove", (event) => {
-          // Konvertiere Mausposition in Kartenkoordinaten
           const point = new DOMPoint(event.clientX, event.clientY);
           const coordinate = map.convertPointOnPageToCoordinate(point);
 
@@ -214,13 +485,10 @@ export default {
               const radiusInMeters = 1000000;
               previewCircle4 = new window.mapkit.CircleOverlay(
                 coordinate,
-                radiusInMeters,
-                {
-                  fillColor: "#0000FF22", // Transparente Füllfarbe
-                  strokeColor: "#0000FF", // Linienfarbe
-                  lineWidth: 2, // Breite der Linie
-                }
+                radiusInMeters
               );
+              previewCircle4.style = shipStyle;
+
               map.addOverlay(previewCircle4);
             }
           } else {
@@ -237,13 +505,10 @@ export default {
               const radiusInMeters = 2000000;
               previewCircle3 = new window.mapkit.CircleOverlay(
                 coordinate,
-                radiusInMeters,
-                {
-                  fillColor: "#0000FF22", // Transparente Füllfarbe
-                  strokeColor: "#0000FF", // Linienfarbe
-                  lineWidth: 2, // Breite der Linie
-                }
+                radiusInMeters
               );
+
+              previewCircle3.style = baseStyle;
               map.addOverlay(previewCircle3);
             }
           } else {
@@ -254,7 +519,6 @@ export default {
           }
         });
 
-      // Mouse Leave Event, um den Kreis zu entfernen, wenn die Maus die Karte verlässt
       map.element.addEventListener("mouseleave", () => {
         if (previewCircle) {
           map.removeOverlay(previewCircle);
@@ -262,27 +526,6 @@ export default {
         }
       });
 
-      // Setting properties on creation:
-      /*var sfoAnnotation = new MarkerAnnotation(sfo, {
-        color: "#f4a56d",
-        title: "SFO",
-        glyphText: "✈️",
-      });
-      var an2 = new MarkerAnnotation(
-        new window.mapkit.Coordinate(36.321718, 30.331393),
-        { color: "#f4a56d", title: "Hooker's Haven", glyphText: "✈️" }
-      );
-
-      // Setting properties after creation:
-      var workAnnotation = new MarkerAnnotation(work);
-      workAnnotation.color = "#000000";
-      workAnnotation.title = "Work";
-      workAnnotation.subtitle = "Apple Park";
-      // workAnnotation.selected = "true";
-      workAnnotation.glyphText = "☠️";
-
-      map.showItems([sfoAnnotation, workAnnotation, an2]);
-*/
       let geoJSONParserDelegate = {
         itemForPolygon: function (overlay) {
           overlay.style = new window.mapkit.Style({
@@ -331,22 +574,6 @@ export default {
         },
       };
 
-      //Coming in an update :)
-      /*var mapLegend = document.querySelector(".map-legend");
-
-      function addLegend() {
-        let el, textNode;
-        MAP_COLORS.forEach(function (mColor) {
-          el = document.createElement("div");
-          textNode = document.createTextNode(mColor.range);
-          el.appendChild(textNode);
-          el.style.background = mColor.color;
-          mapLegend.appendChild(el);
-        });
-      }
-
-      addLegend();*/
-
       window.mapkit.importGeoJSON(
         "https://alex.polan.sk/pirates-simulator/countries.php",
         geoJSONParserDelegate
@@ -354,7 +581,7 @@ export default {
 
       //const list = [];
 
-      map.element.addEventListener("click", (event) => {
+      map.element.addEventListener("click", async (event) => {
         if (!event.shiftKey && !event.altKey) {
           return;
 
@@ -373,36 +600,70 @@ export default {
         );
 
         if (
-          event.altKey &&
-          (!localStorage.getItem("shipCount") ||
-            parseInt(localStorage.getItem("shipCount")) < 3)
+          event.altKey /*&&
+         (!localStorage.getItem("shipCount") ||
+            parseInt(localStorage.getItem("shipCount")) < 3)*/
         ) {
-          clickAnnotation = new MarkerAnnotation(coordinate, {
-            title: this.generatePirateShipName(),
-            color: "#160808",
-            glyphText: "⚓️",
-          });
-          map.addAnnotation(clickAnnotation);
+          const shipCount = await getShipCount();
+          const shipPrice = calculateShipPrice(shipCount);
 
-          const radiusInMeters = 1000000; // Radius in meters
-          const circle = new window.mapkit.CircleOverlay(
-            coordinate,
-            radiusInMeters,
-            {
-              fillColor: "#0000FF22", // Transparente Füllfarbe
-              strokeColor: "#0000FF", // Linienfarbe
-              lineWidth: 2, // Breite der Linie
-            }
-          );
+          if ((await getCoinCount()) >= shipPrice) {
+            const ship_name = this.generatePirateShipName();
+            const json = {
+              coordinate: coordinate,
+              name: ship_name,
+              verification_id: verificationId,
+            };
 
-          map.addOverlay(circle);
+            axios
+              .post("https://alex.polan.sk/pirates-simulator/ships.php", json)
+              .then(async (response) => {
+                if (response.data.success) {
+                  console.log("Ship created successfully");
 
-          if (localStorage.getItem("shipCount")) {
-            const newShipCount =
-              parseInt(localStorage.getItem("shipCount")) + 1;
-            localStorage.setItem("shipCount", newShipCount);
+                  shipAnnotation = new MarkerAnnotation(coordinate, {
+                    title: ship_name,
+                    color: "#160808",
+                    glyphText: "⚓️",
+                  });
+                  map.addAnnotation(shipAnnotation);
+                  this.drawRadius(
+                    map,
+                    coordinate,
+                    1000000,
+                    /*  baseRadiusStrokeColor,
+                    baseRadiusStrokeOpacity,
+                    baseRadiusFillColor,
+                    baseRadiusFillOpacity,
+                    baseRadiusLineWidth*/
+                    shipStyle
+                  );
+
+                  await subtractCoins(shipPrice);
+                  await updateShipPrice();
+                  if (this.ships.length == 2) {
+                    this.hint = "Now you are ready to go! GLHF!";
+                  } else if (this.ships.length == 1) {
+                    this.hint =
+                      "Place your ships by holding the alt key and klick anywhere on the sea. (1 ship)";
+                  }
+
+                  if (localStorage.getItem("shipCount")) {
+                    const newShipCount =
+                      parseInt(localStorage.getItem("shipCount")) + 1;
+                    localStorage.setItem("shipCount", newShipCount);
+                  } else {
+                    localStorage.setItem("shipCount", 1);
+                  }
+                } else {
+                  console.error("Error creating ship:", response.data.message);
+                }
+              })
+              .catch((error) => {
+                console.error("Error creating ship:", error);
+              });
           } else {
-            localStorage.setItem("shipCount", 1);
+            this.hint = `You need at least ${shipPrice.toLocaleString()} coins to place a ship!`;
           }
         }
 
@@ -412,7 +673,7 @@ export default {
               "Ahoi! Please enter the name of your new city:"
             );
 
-            let json = {
+            const json = {
               coordinate: coordinate,
               name: city_name,
               verification_id: verificationId,
@@ -425,7 +686,6 @@ export default {
               .post("https://alex.polan.sk/pirates-simulator/base.php", json)
               .then((response) => {
                 if (response.data.success) {
-                  //status === "success"
                   console.log("Base created successfully");
 
                   clickAnnotation = new MarkerAnnotation(coordinate, {
@@ -434,22 +694,21 @@ export default {
                     glyphText: "☠️",
                   });
                   map.addAnnotation(clickAnnotation);
-
-                  const radiusInMeters = 2000000; // Radius in Metern
-                  const circle = new window.mapkit.CircleOverlay(
+                  //this.drawRadius(map, coordinate, 2000000, 3);
+                  this.drawRadius(
+                    map,
                     coordinate,
-                    radiusInMeters,
-                    {
-                      fillColor: "#0000FF22", // Transparente Füllfarbe
-                      strokeColor: "#0000FF", // Linienfarbe
-                      lineWidth: 2, // Breite der Linie
-                    }
+                    2000000,
+                    /*  baseRadiusStrokeColor,
+                    baseRadiusStrokeOpacity,
+                    baseRadiusFillColor,
+                    baseRadiusFillOpacity,
+                    baseRadiusLineWidth*/
+                    baseStyle
                   );
 
-                  map.addOverlay(circle);
-
                   this.hint =
-                    "Place your ships by holding the alt key and klick anywhere on the sea. (3 ships)";
+                    "Place your ships by holding the alt key and klick anywhere on the sea. (2 ships)";
                   console.log(this.hint);
                   this.blockNewCities = true;
                 } else {
@@ -467,22 +726,49 @@ export default {
       this.spawnGoldAnnotations(map);
       setInterval(() => {
         this.checkForGold(map);
-      }, 150); // Check for gold every 1.5 seconds
+        this.checkForDiamonds(map);
+      }, 200);
+    },
+    drawRadius(
+      map,
+      coordinate,
+      radius,
+      /*strokeColor,
+      strokeOpacity,
+      fillColor,
+      fillOpacity,
+      lineWidth = 2*/
+      style
+    ) {
+      const circle = new window.mapkit.CircleOverlay(
+        coordinate,
+        radius /*{
+        fillColor: fillColor,
+        fillOpacity: fillOpacity,
+        strokeColor: strokeColor,
+        strokeOpacity: strokeOpacity,
+        lineWidth: lineWidth,
+      }*/
+      );
+      circle.style = style;
+      map.addOverlay(circle);
     },
     spawnGoldAnnotations(map) {
       const MarkerAnnotation = window.mapkit.MarkerAnnotation;
       setInterval(() => {
         const randomIndex = Math.floor(Math.random() * goldCoordinates.length);
         const coordinate = goldCoordinates[randomIndex];
+        const isDiamond = Math.random() < 3 / 20; // 3 in 20 chance for diamonds
+
         const annotation = new MarkerAnnotation(
           new window.mapkit.Coordinate(
             coordinate.latitude,
             coordinate.longitude
           ),
           {
-            title: "Gold",
-            color: "#FFD700",
-            glyphText: "💰",
+            title: isDiamond ? "Diamond" : "Gold",
+            color: isDiamond ? "#00FFFF" : "#FFD700", // Cyan for diamonds, gold for gold
+            glyphText: isDiamond ? "💎" : "⭐️", // Diamond emoji for diamonds, star emoji for gold
           }
         );
         map.addAnnotation(annotation);
@@ -499,36 +785,155 @@ export default {
       );
       console.log(goldAnnotations.length);
 
-      /* this.ships.forEach(ship => {
-        goldAnnotations.forEach(gold => {
-          if (this.isWithinRadius(ship.coordinate, gold.coordinate, radius)) {
-            console.log("Gold!");
-          }
-        });
-      });
-*/
-      const radius = 2000; // Define the radius within which to check for gold (in kilometers)
-      //this.cities.forEach((city) => {
-
-      if (localStorage.getItem("base") && localStorage.getItem("base") != "") {
-        const base = JSON.parse(localStorage.getItem("base"));
-        //  console.log(base);
-        if (base.coordinate) {
-          goldAnnotations.forEach((gold) => {
-            console.log(
-              this.isWithinRadius(base.coordinate, gold.coordinate, radius)
-            );
-            if (this.isWithinRadius(base.coordinate, gold.coordinate, radius)) {
+      this.ships.forEach((ship) => {
+        if (ship.coordinate_y && ship.coordinate_y) {
+          //base.coordinate
+          ship.coordinate = new window.mapkit.Coordinate(
+            Number(ship.coordinate_x),
+            Number(ship.coordinate_y)
+          );
+          goldAnnotations.forEach(async (gold) => {
+            if (this.isWithinRadius(ship.coordinate, gold.coordinate, 1000)) {
               console.log("Gold!");
-              this.addMoney(100);
+              await addCoins(100);
+
+              //check
+              //gold.color = "#b39700";
+              const MarkerAnnotation = window.mapkit.MarkerAnnotation;
+              //alert(gold.coordinate);
+              const new_gold = new MarkerAnnotation(gold.coordinate, {
+                title: "New Gold",
+                color: "#b39700",
+                glyphText: "⭐️", //💰
+              });
+              map.addAnnotation(new_gold);
               map.removeAnnotation(gold);
+              setTimeout(() => {
+                map.removeAnnotation(new_gold);
+              }, 3000);
             }
           });
         }
-      }
+      });
 
-      // });
+      if (this.bases) {
+        //localStorage.getItem("base") && localStorage.getItem("base") != ""
+        //const base = this.bases[0]; //JSON.parse(localStorage.getItem("base"))
+        //  console.log(base);
+
+        this.bases.forEach((base) => {
+          if (base.coordinate_y && base.coordinate_y) {
+            //base.coordinate
+            base.coordinate = new window.mapkit.Coordinate(
+              Number(base.coordinate_x),
+              Number(base.coordinate_y)
+            );
+            goldAnnotations.forEach(async (gold) => {
+              console.log(
+                this.isWithinRadius(base.coordinate, gold.coordinate, 2000)
+              );
+              if (this.isWithinRadius(base.coordinate, gold.coordinate, 2000)) {
+                console.log("Gold!");
+                await addCoins(100);
+
+                //check
+                //gold.color = "#b39700";
+                const MarkerAnnotation = window.mapkit.MarkerAnnotation;
+                const new_gold = new MarkerAnnotation(gold.coordinate, {
+                  title: "New Gold",
+                  color: "#b39700",
+                  glyphText: "⭐️", //💰
+                });
+                map.addAnnotation(new_gold);
+                map.removeAnnotation(gold);
+                setTimeout(() => {
+                  map.removeAnnotation(new_gold);
+                }, 3000);
+              }
+            });
+          }
+        });
+      }
     },
+
+    checkForDiamonds(map) {
+      //   console.log(1);
+      // const radius = 0.01; // Define the radius within which to check for gold (in degrees)
+      const goldAnnotations = map.annotations.filter(
+        (annotation) => annotation.title === "Diamond"
+      );
+      console.log(goldAnnotations.length);
+
+      this.ships.forEach((ship) => {
+        if (ship.coordinate_y && ship.coordinate_y) {
+          //base.coordinate
+          ship.coordinate = new window.mapkit.Coordinate(
+            Number(ship.coordinate_x),
+            Number(ship.coordinate_y)
+          );
+          goldAnnotations.forEach(async (gold) => {
+            if (this.isWithinRadius(ship.coordinate, gold.coordinate, 1000)) {
+              console.log("Diamond!");
+              await addCoins(300);
+
+              //check
+              //gold.color = "#b39700";
+              const MarkerAnnotation = window.mapkit.MarkerAnnotation;
+              //alert(gold.coordinate);
+              const new_diamond = new MarkerAnnotation(gold.coordinate, {
+                title: "New Diamond",
+                color: "#00b3b3",
+                glyphText: "💎",
+              });
+              map.addAnnotation(new_diamond);
+              map.removeAnnotation(gold);
+              setTimeout(() => {
+                map.removeAnnotation(new_diamond);
+              }, 3000);
+            }
+          });
+        }
+      });
+
+      if (this.bases) {
+        //localStorage.getItem("base") && localStorage.getItem("base") != ""
+        //const base = this.bases[0]; //JSON.parse(localStorage.getItem("base"))
+        //  console.log(base);
+
+        this.bases.forEach((base) => {
+          if (base.coordinate_y && base.coordinate_y) {
+            //base.coordinate
+            base.coordinate = new window.mapkit.Coordinate(
+              Number(base.coordinate_x),
+              Number(base.coordinate_y)
+            );
+            goldAnnotations.forEach(async (gold) => {
+              console.log(
+                this.isWithinRadius(base.coordinate, gold.coordinate, 2000)
+              );
+              if (this.isWithinRadius(base.coordinate, gold.coordinate, 2000)) {
+                console.log("Diamond!");
+                await addCoins(300);
+                //check
+                //gold.color = "#b39700";
+                const MarkerAnnotation = window.mapkit.MarkerAnnotation;
+                const new_diamond = new MarkerAnnotation(gold.coordinate, {
+                  title: "New Diamond",
+                  color: "#00b3b3",
+                  glyphText: "💎",
+                });
+                map.addAnnotation(new_diamond);
+                map.removeAnnotation(gold);
+                setTimeout(() => {
+                  map.removeAnnotation(new_diamond);
+                }, 3000);
+              }
+            });
+          }
+        });
+      }
+    },
+
     isWithinRadius(coord1, coord2, radius) {
       const R = 6371; // Radius of the Earth in kilometers
       const dLat = this.deg2rad(coord2.latitude - coord1.latitude);
@@ -546,73 +951,8 @@ export default {
     deg2rad(deg) {
       return deg * (Math.PI / 180);
     },
-    addMoney(count) {
-      const verificationId = localStorage.getItem("verification_id");
-      if (!verificationId) {
-        console.error("Verification ID is missing");
-        return;
-      }
-
-      let newCoinCount;
-      if (
-        localStorage.getItem("goldCoins") &&
-        localStorage.getItem("goldCoins") !== ""
-      ) {
-        const coins = parseInt(localStorage.getItem("goldCoins"));
-        newCoinCount = coins + count;
-      } else {
-        newCoinCount = count;
-      }
-
-      localStorage.setItem("goldCoins", newCoinCount);
-      eventBus.emit("updateGoldCoins");
-
-      // Send the new coin count to the backend
-      this.$axios
-        .post("coins.php", {
-          verification_id: verificationId,
-          amount: newCoinCount,
-        })
-        .then((response) => {
-          if (response.data.success) {
-            console.log("Coins updated successfully");
-          } else {
-            console.error("Error updating coins:", response.data.error);
-          }
-        })
-        .catch((error) => {
-          console.error("Error updating coins:", error);
-        });
-    },
   },
 };
-
-/*
-Show Radius.
-
-// Erstelle die Annotation
-const annotationCoordinate = new mapkit.Coordinate(47.3769, 8.5417);
-const annotation = new mapkit.MarkerAnnotation(annotationCoordinate, {
-  title: "Marker",
-  color: "#FF0000"
-});
-
-// Füge die Annotation zur Karte hinzu
-map.addAnnotation(annotation);
-
-// Erstelle einen Kreis mit einem Radius (z. B. 1000 Meter)
-const radiusInMeters = 1000; // Radius in Metern
-const circle = new mapkit.CircleOverlay(annotationCoordinate, radiusInMeters, {
-  fillColor: "#0000FF22", // Transparente Füllfarbe
-  strokeColor: "#0000FF", // Linienfarbe
-  lineWidth: 2,           // Breite der Linie
-});
-
-// Füge den Kreis zur Karte hinzu
-map.addOverlay(circle);
-
-
-*/
 </script>
 
 <style>
@@ -696,8 +1036,8 @@ html {
 
 .live-chat2 {
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: 5px; /*0*/
+  left: 5px; /*0*/
   width: 500px;
   height: 300px;
   overflow: hidden;
@@ -715,5 +1055,7 @@ html {
   top: 8px;
   left: 6px;
   z-index: 1010;
+  display: flex;
+  align-items: center;
 }
 </style>

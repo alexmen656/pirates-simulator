@@ -13,7 +13,7 @@
     </div>-->
     <div class="coin-count">
       <!--  <img src="@/assets/gold-coin.png" alt="Gold Coin" class="coin-icon" />-->
-      <span class="coin-text">{{ coinCount }}</span>
+      <span class="coin-text">${{ formattedCoinCount }}</span>
     </div>
   </div>
 </template>
@@ -26,6 +26,11 @@ export default {
       coinCount: 0,
     };
   },
+  computed: {
+    formattedCoinCount() {
+      return Number(this.coinCount).toLocaleString();
+    }
+  },
   mounted() {
     this.coinCount = localStorage.getItem("goldCoins") ?? 0;
     eventBus.on("updateGoldCoins", ()=>{this.coinCount = localStorage.getItem("goldCoins") ?? 0;});
@@ -33,6 +38,11 @@ export default {
   beforeUnmount() {
     eventBus.off("updateGoldCoins", ()=>{this.coinCount = localStorage.getItem("goldCoins") ?? 0;});
   },
+  methods: {
+    updateCoinCount() {
+      this.coinCount = localStorage.getItem("goldCoins") ?? 0;
+    }
+  }
 };
 </script>
 

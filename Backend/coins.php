@@ -32,12 +32,27 @@ if ($method === 'POST') {
         exit;
     }
 
-    // Insert the coin transaction
+    // Retrieve the last coin transaction for the user
+    $stmt = $conn->prepare("SELECT amount FROM coins WHERE user_id = ? ORDER BY created_at DESC LIMIT 1");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $stmt->bind_result($last_amount);
+    $stmt->fetch();
+    $stmt->close();
+
+    if (!isset($last_amount)) {
+        $last_amount = 0; // If no previous transaction, start from 0
+    }
+
+    // Calculate the new amount
+    $new_amount = $last_amount + $amount;
+
+    // Insert the new coin transaction
     $stmt = $conn->prepare("INSERT INTO coins (user_id, amount) VALUES (?, ?)");
-    $stmt->bind_param("ii", $user_id, $amount);
+    $stmt->bind_param("ii", $user_id, $new_amount);
 
     if ($stmt->execute()) {
-        echo json_encode(['success' => 'Coins transaction recorded successfully']);
+        echo json_encode(['success' => 'Coins transaction recorded successfully', 'new_amount' => $new_amount]);
     } else {
         echo json_encode(['error' => 'Failed to record coins transaction']);
     }
@@ -66,31 +81,47 @@ if ($method === 'POST') {
             exit;
         }
 
-        // Retrieve the coin transactions for the user
-        $stmt = $conn->prepare("SELECT amount, created_at FROM coins WHERE user_id = ?");
+        // Retrieve the last coin transaction for the user
+        $stmt = $conn->prepare("SELECT amount FROM coins WHERE user_id = ? ORDER BY created_at DESC LIMIT 1");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
-        $result = $stmt->get_result();
+        $stmt->bind_result($amount);
+        $stmt->fetch();
 
-        $transactions = [];
-        while ($row = $result->fetch_assoc()) {
-            $transactions[] = $row;
+        if (isset($amount)) {
+            echo json_encode(['amount' => $amount]);
+        } else {
+            echo json_encode(['error' => 'No coin transactions found']);
         }
-
-        echo json_encode($transactions);
 
         $stmt->close();
         $conn->close();
     } elseif (isset($_GET['top_users'])) {
-        // Retrieve the top 5 users with the most coins
+        // Retrieve the latest coin entry for each user
+        $latest_entries = [];
         $stmt = $conn->prepare("
-            SELECT u.username, SUM(c.amount) as total_coins
+            SELECT user_id, MAX(id) as latest_id
+            FROM coins
+            GROUP BY user_id
+        ");
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        while ($row = $result->fetch_assoc()) {
+            $latest_entries[$row['user_id']] = $row['latest_id'];
+        }
+        $stmt->close();
+
+        // Retrieve the latest coin amounts for the top users
+        $placeholders = implode(',', array_fill(0, count($latest_entries), '?'));
+        $stmt = $conn->prepare("
+            SELECT u.username, c.amount as latest_coins
             FROM users u
             JOIN coins c ON u.id = c.user_id
-            GROUP BY u.id
-            ORDER BY total_coins DESC
-            LIMIT 5
+            WHERE c.id IN ($placeholders)
+            ORDER BY latest_coins DESC
         ");
+        $stmt->bind_param(str_repeat('i', count($latest_entries)), ...array_values($latest_entries));
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -109,4 +140,5 @@ if ($method === 'POST') {
 } else {
     echo json_encode(['error' => 'Invalid request method']);
 }
+?>
 ?>

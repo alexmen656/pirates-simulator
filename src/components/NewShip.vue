@@ -1,36 +1,67 @@
 <template>
-    <div class="new-ship-container">
-  <div class="tooltip-container">
-    <button class="place-boat-button">
-      +Ship
-      <!-- <img src="@/assets/boat-icon.png" alt="Place Boat" class="boat-icon" />-->
-    </button>
-    <span class="tooltip-text"
-      >You can place a boat with Alt+Click. A ship costs 500 coins. If you have
-      enough, it will be placed. If not, it won't be placed.</span
-    >
+<div class="new-ship-container">
+    <div class="music-container">
+      <button class="place-boat-button" @click="toggleMusic">
+        <span style="display: block; height: 28px;"> {{ isMusicPlaying ? "🔊" : "🔇" }}</span>
+      </button>
+    </div>
+    <div class="tooltip-container">
+      <button class="place-boat-button">
+  <span>     +Ship ({{ formattedShipPrice }}$)</span> 
+        <!-- <img src="@/assets/boat-icon.png" alt="Place Boat" class="boat-icon" />-->
+      </button>
+      <span class="tooltip-text"
+        >You can place a boat with Alt+Click. A ship costs {{ formattedShipPrice }} coins. If you
+        have enough, it will be placed. If not, it won't be placed.</span
+      >
+    </div>
   </div>
-</div>
 </template>
 <script>
 import { eventBus } from "@/eventBus";
+import { updateShipPrice } from "@/shipLogic";
 
 export default {
   data() {
     return {
       coinCount: 0,
+      isMusicPlaying: false,
+      shipPrice: 750,
     };
+  },
+  computed: {
+    formattedShipPrice() {
+      return this.shipPrice.toLocaleString();
+    }
   },
   mounted() {
     this.coinCount = localStorage.getItem("goldCoins") ?? 0;
-    eventBus.on("updateGoldCoins", () => {
-      this.coinCount = localStorage.getItem("goldCoins") ?? 0;
-    });
+    eventBus.on("updateGoldCoins", this.updateCoinCount);
+    eventBus.on("shipPriceUpdated", this.updateShipPrice);
+    updateShipPrice();
   },
   beforeUnmount() {
-    eventBus.off("updateGoldCoins", () => {
+    eventBus.off("updateGoldCoins", this.updateCoinCount);
+    eventBus.off("shipPriceUpdated", this.updateShipPrice);
+  },
+  methods: {
+    updateCoinCount() {
       this.coinCount = localStorage.getItem("goldCoins") ?? 0;
-    });
+    },
+    updateShipPrice(price) {
+      this.shipPrice = price;
+    },
+    toggleMusic() {
+      const audio = document.querySelector("audio");
+      if (audio) {
+        if (this.isMusicPlaying) {
+          audio.pause();
+        } else {
+          audio.play();
+        }
+        this.isMusicPlaying = !this.isMusicPlaying;
+      }
+    },
   },
 };
 </script>
@@ -41,9 +72,18 @@ export default {
   display: inline-block;
   /*margin-right: 30px;*/
   height: 100%;
+  margin-left: 6px;
 }
 
-.place-boat-button {
+.music-container {
+  position: relative;
+  display: inline-block;
+  /*margin-right: 30px;*/
+  height: 100%;
+}
+
+/*.place-boat*/
+button {
   background-color: #3498db;
   border: none;
   color: white;
@@ -76,7 +116,7 @@ export default {
   z-index: 1;
   top: 125%; /* Position the tooltip below the button */
   left: 100%;
-  margin-left: -110px; /* Use half of the width (220/2 = 110), to center the tooltip */
+  margin-left: -210px; /* Use half of the width (220/2 = 110), to center the tooltip */
   opacity: 0;
   transition: opacity 0.3s;
 }

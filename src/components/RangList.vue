@@ -1,20 +1,35 @@
 <template>
   <div class="rang-list">
-    <h2>Top 5 Pirates</h2>
+    <h2>
+      Top
+      <!--5 -->Pirates
+    </h2>
     <ul>
-      <li v-for="user in topUsers" :key="user.username">
-        {{ user.username }} - {{ user.total_coins }}
+      <li
+        v-for="(user, index) in topUsers"
+        :key="user.username"
+        :class="getClass(index)"
+      >
+        {{ user.username }} - ${{ formate(user.latest_coins)
+        }}<!--total-->
         <!--coins (too long :) )-->
       </li>
     </ul>
-    <button @click="showMore = true">Show more</button>
+    <!--<button @click="showMore = true">Show more</button>-->
 
     <div v-if="showMore" class="modal-overlay" @click.self="showMore = false">
       <div class="modal-content">
-        <h2>Top 5 Pirates</h2>
+        <h2>
+          Top
+          <!--5 -->Pirates
+        </h2>
         <ul>
-          <li v-for="user in topUsers" :key="user.username">
-            {{ user.username }} - {{ user.total_coins }} coins
+          <li
+            v-for="(user, index) in topUsers"
+            :key="user.username"
+            :class="getClass(index)"
+          >
+            {{ user.username }} - {{ user.latest_coins }} coins<!--total-->
           </li>
         </ul>
         <button @click="showMore = false">Close</button>
@@ -34,23 +49,47 @@
         >ES</span
       >
     </h4>
+    <hr />
+    <h4>Music Credits</h4>
   </div>
 </template>
 
 <script>
+import { eventBus } from "@/eventBus";
+
 export default {
   name: "RangList",
   data() {
     return {
       topUsers: [],
       currentLanguage: localStorage.getItem("language") || "en",
-      showMore: false
+      showMore: false,
     };
   },
   created() {
     this.fetchTopUsers();
   },
+  mounted() {
+    this.coinCount = localStorage.getItem("goldCoins") ?? 0;
+    eventBus.on("updateGoldCoins", () => {
+      this.fetchTopUsers();
+    });
+  },
+  beforeUnmount() {
+    eventBus.off("updateGoldCoins", () => {
+      this.fetchTopUsers();
+    });
+  },
   methods: {
+    formate(coinCount) {
+      return Number(coinCount).toLocaleString();
+    },
+    getClass(index) {
+      if (index === 0) return "fplace";
+      if (index === 1) return "splace";
+      if (index === 2) return "tplace";
+      return "";
+    },
     isActiveLanguage(lang) {
       return this.currentLanguage === lang ? "active-language" : "";
     },
@@ -83,7 +122,7 @@ export default {
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
-  background-color: rgba(18, 18, 18, 0.6);
+  background-color: rgba(18, 18, 18, 0.7);
   padding: 10px;
   border: none;
   border-radius: 16px;
@@ -104,6 +143,21 @@ export default {
   list-style: none;
   padding: 0;
   margin: 0;
+  height: 12.5rem;
+  max-height: 20rem;
+  overflow: scroll;
+}
+
+.rang-list li.fplace {
+  background-color: gold;
+}
+
+.rang-list li.splace {
+  background-color: silver;
+}
+
+.rang-list li.tplace {
+  background-color: brown;
 }
 
 .rang-list li {

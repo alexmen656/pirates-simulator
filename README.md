@@ -32,3 +32,27 @@ Todos:
 -Add Meta data
 -Add Site Heading _/
 -Multi-lang _/
+-Spawn diamonds _/
+
+Known errors & bugs, things that are missing:
+- New hint after only placing 1 ship not 3
+- Problems with hints in general
+- Multilang not finished
+- Musiccontrol to mute the music _/
+- Ranglist see all players -/
+- When gold already exits and ship is placed, gold doesnt get collected
+- Preview circle only showing when moved with mouse
+- If click with shift - base popup displays but you are not allowed to place new bases
+- Redesign StartView.vue
+- Dynamic prices of ships _/ //Should be done but I must double check it
+- check ranglist -/
+- music crčedits page
+
+Checklist before submitting:
+- Enable Music
+- Change Version
+
+Next Update:
+- Ship Upgrades for more range
+- Stats: How many Gold and Diamonds you have collected
+- New type of thing to collect

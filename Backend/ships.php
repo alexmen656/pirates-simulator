@@ -43,32 +43,32 @@ if ($method === 'POST') {
         exit;
     }
 
-    // Check if the user already has a base
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM bases WHERE user_id = ?");
+    // Check if the user already has a ship
+    /*$stmt = $conn->prepare("SELECT COUNT(*) FROM bases WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
-    $stmt->bind_result($base_count);
+    $stmt->bind_result($ship_count);
     $stmt->fetch();
-    $stmt->close();
+    $stmt->close();*/
 
-    if ($base_count > 0) {
-        echo json_encode(['error' => 'User already has a base']);
+   /* if ($ship_count > 0) {
+        echo json_encode(['error' => 'User already has a ship']);
         exit;
-    }
+    }*/
 
-    $stmt = $conn->prepare("INSERT INTO bases (user_id, name, coordinate_x, coordinate_y) VALUES (?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO ships (user_id, name, coordinate_x, coordinate_y) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("isdd", $user_id, $name, $coordinate_x, $coordinate_y);
 
     if ($stmt->execute()) {
-        $message = "User $user_name has created a new base called $name";
+        $message = "User $user_name has created a new ship called $name";
         $sql = "INSERT INTO chat_messages (author, message, type) VALUES ('System', '$message', 'system')";
         if ($conn->query($sql) === TRUE) {
-            echo json_encode(['success' => 'Base created successfully']);
+            echo json_encode(['success' => 'Ship created successfully']);
         } else {
             echo json_encode(['status' => 'error', 'message' => $conn->error]);
         }
     } else {
-        echo json_encode(['error' => 'Failed to create base']);
+        echo json_encode(['error' => 'Failed to create ship']);
     }
 
     $stmt->close();
@@ -94,18 +94,18 @@ if ($method === 'POST') {
         exit;
     }
 
-    // Retrieve the bases for the user
-    $stmt = $conn->prepare("SELECT * FROM bases WHERE user_id = ?");
+    // Retrieve the ships for the user
+    $stmt = $conn->prepare("SELECT * FROM ships WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    $bases = [];
+    $ships = [];
     while ($row = $result->fetch_assoc()) {
-        $bases[] = $row;
+        $ships[] = $row;
     }
 
-    echo json_encode($bases);
+    echo json_encode($ships);
 
     $stmt->close();
     $conn->close();

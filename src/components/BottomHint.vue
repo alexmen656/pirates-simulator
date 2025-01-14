@@ -1,13 +1,13 @@
 <template>
   <div class="bottom-hint">
-    <p>{{ hint}}</p>
+    <p>{{ hint }}</p>
   </div>
 </template>
 
 <script>
 export default {
   props: ["hint"],
- /* data() {
+  /* data() {
     return {
       hintMessage:
         "Place your ship by holding Shift and then clicking anywhere on the land.",

@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="live-chat">
-      <div class="messages">
+      <div class="messages" ref="messagesContainer">
         <div
           v-for="message in messages"
           :key="message.id"
-          :class="message.type"
+          :class="message.type + ' message'"
         >
           <span class="author">{{ message.author }}: </span>
           <span class="text">{{ message.message }}</span>
@@ -38,6 +38,9 @@ export default {
       this.fetchMessages();
    // }, 1000);
   },
+  updated() {
+    this.scrollToBottom();
+  },
   methods: {
     fetchMessages() {
       this.$axios.get('livechat.php')
@@ -66,6 +69,10 @@ export default {
             console.error('Error sending message:', error);
           });
       }
+    },
+    scrollToBottom() {
+      const container = this.$refs.messagesContainer;
+      container.scrollTop = container.scrollHeight;
     }
   }
 };
@@ -78,21 +85,20 @@ export default {
   height: 100%;
   width: 100%;
   border: 1px solid #ccc;
-  background-color: rgba(18, 18, 18, 0.6);
+  background-color: rgba(18, 18, 18, 0.95);/*0.6*/
   border: none;
-  border-radius: 5px;
+  border-radius: 18px;/*5*/
   overflow: hidden;
-  border-radius: 5px;
 }
 
 .messages {
   flex: 1;
-  padding: 10px;
+  padding: 5px;/*10*/
   overflow-y: auto;
 }
 
 .message {
-  margin-bottom: 10px;
+  margin-bottom: 3px;
 }
 
 .user {
@@ -105,22 +111,33 @@ export default {
 
 .input-container {
   display: flex;
-  padding: 10px;
-  border-top: 1px solid #ccc;
+  padding: 5px;/*10*/
+  border-top: 3px solid black;/*#ccc*/
+  background-color:  rgba(18, 18, 18, 0.4);
 }
 
 input[type="text"] {
   flex: 1;
   padding: 10px;
   font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: none; /*1px solid #ccc*/
+  border-radius: 8px;/*5*/
+  background-color: black;
+  color: white;
 }
 
 button {
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  margin-left: 10px;
+  margin-left: 8px;
+  border: none; /*1px solid #ccc*/
+  border-radius: 8px;/*5*/
+  background-color: black;
+  color: #7f7f7f;
+}
+
+.author, .text {
+  font-size: 1.25rem;
 }
 </style>

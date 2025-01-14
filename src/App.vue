@@ -1,7 +1,14 @@
 <template>
-  <!--<div id="app">-->
+  <div id="app" @click="startMusicOnInteraction">
     <router-view> </router-view>
-<!--  </div>-->
+    <audio
+      ref="backgroundMusic"
+      src="https://alex.polan.sk/pirates-simulator/pirate-music.mp3"
+      loop
+      autoplay
+    ></audio
+    ><!--@/assets/pirate-music.mp3-->
+  </div>
 </template>
 
 <script>
@@ -13,14 +20,70 @@ export default {
   /*components: {
     RangList,
   },*/
+  data() {
+    return {
+      musicStarted: false,
+      fadeDuration: 5000, // Duration for fade-in and fade-out in milliseconds
+    };
+  },
   mounted() {
     if (localStorage.getItem("language") === null) {
       localStorage.setItem("language", "en");
     }
     this.$i18n.locale = localStorage.getItem("language");
     this.initMap();
+    //
+    // this.playBackgroundMusic();
   },
   methods: {
+   /* startMusicOnInteraction() {
+      if (!this.musicStarted) {
+        this.playBackgroundMusic();
+        this.musicStarted = true;
+        // Remove the event listener after the music has started
+        this.$el.removeEventListener("mousemove", this.startMusicOnInteraction);
+      }
+    },
+    playBackgroundMusic() {
+      const audio = this.$refs.backgroundMusic;
+      audio.volume = 0.1; // Start at 10% volume
+      audio
+     //   .play()
+        .then(() => {
+          this.fadeIn(audio);
+        })
+        .catch((error) => {
+          console.error("Error playing background music:", error);
+        });
+
+      // Set up fade-out effect
+      audio.addEventListener("timeupdate", () => {
+        const timeLeft = audio.duration - audio.currentTime;
+        if (timeLeft < this.fadeDuration / 1000) {
+          // this.fadeOut(audio, timeLeft * 1000);
+        }
+      });
+    },*/
+    fadeIn(audio) {
+      const step = 0.1 / (this.fadeDuration / 100); // Calculate the step size for each interval
+      const interval = setInterval(() => {
+        if (audio.volume < 1.0) {
+          audio.volume = Math.min(audio.volume + step, 1.0);
+        } else {
+          clearInterval(interval);
+        }
+      }, 100);
+    },
+    fadeOut(audio, duration) {
+      const step = audio.volume / (duration / 100); // Calculate the step size for each interval
+      const interval = setInterval(() => {
+        if (audio.volume > 0.0) {
+          audio.volume = Math.max(audio.volume - step, 0.0);
+        } else {
+          clearInterval(interval);
+        }
+      }, 100);
+    },
     async initMap() {
       var MarkerAnnotation = window.mapkit.MarkerAnnotation,
         clickAnnotation;
@@ -211,7 +274,6 @@ export default {
   font-weight: normal;
   font-style: normal;
 }
-
 
 #map {
   width: 100%;
