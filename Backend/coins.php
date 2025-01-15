@@ -11,15 +11,17 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
 
+    // Validierung der Eingabedaten
     $verification_id = $data['verification_id'] ?? '';
     $amount = $data['amount'] ?? '';
+    $description = $data['description'] ?? '';
 
-    if (empty($verification_id) || !is_numeric($amount)) {
-        echo json_encode(['error' => 'Verification ID and amount are required']);
+    if (empty($verification_id) || !is_numeric($amount) || empty($description)) {
+        echo json_encode(['error' => 'Verification ID, amount, and description are required']);
         exit;
     }
 
-    // Look up the user ID based on the verification ID
+    // Benutzer-ID basierend auf der Verification ID abrufen
     $stmt = $conn->prepare("SELECT id FROM users WHERE verification_id = ?");
     $stmt->bind_param("s", $verification_id);
     $stmt->execute();
@@ -32,34 +34,44 @@ if ($method === 'POST') {
         exit;
     }
 
-    // Retrieve the last coin transaction for the user
-    $stmt = $conn->prepare("SELECT amount FROM coins WHERE user_id = ? ORDER BY created_at DESC LIMIT 1");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $stmt->bind_result($last_amount);
-    $stmt->fetch();
-    $stmt->close();
+    $conn->begin_transaction();
 
-    if (!isset($last_amount)) {
-        $last_amount = 0; // If no previous transaction, start from 0
-    }
+    try {
+        // Letzten Betrag abrufen und Datensatz sperren
+        $stmt = $conn->prepare("SELECT amount FROM coins WHERE user_id = ? ORDER BY created_at DESC LIMIT 1 FOR UPDATE");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $stmt->bind_result($last_amount);
+        $stmt->fetch();
+        $stmt->close();
 
-    // Calculate the new amount
-    $new_amount = $last_amount + $amount;
+        if (!isset($last_amount)) {
+            $last_amount = 0; // Falls keine vorherige Transaktion existiert
+        }
 
-    // Insert the new coin transaction
-    $stmt = $conn->prepare("INSERT INTO coins (user_id, amount) VALUES (?, ?)");
-    $stmt->bind_param("ii", $user_id, $new_amount);
+        // Neuen Betrag berechnen
+        $new_amount = $last_amount + $amount;
 
-    if ($stmt->execute()) {
+        // Neue Transaktion einfügen
+        $stmt = $conn->prepare("INSERT INTO coins (user_id, amount, description) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $user_id, $new_amount, $description);
+        $stmt->execute();
+        $stmt->close();
+
+        // Transaktion abschließen
+        $conn->commit();
+
         echo json_encode(['success' => 'Coins transaction recorded successfully', 'new_amount' => $new_amount]);
-    } else {
-        echo json_encode(['error' => 'Failed to record coins transaction']);
-    }
 
-    $stmt->close();
-    $conn->close();
-} elseif ($method === 'GET') {
+    } catch (Exception $e) {
+        // Fehlerbehandlung: Transaktion zurückrollen
+        $conn->rollback();
+        echo json_encode(['error' => 'Failed to record coins transaction', 'details' => $e->getMessage()]);
+    } finally {
+        $conn->close();
+    }
+}
+ elseif ($method === 'GET') {
     if (isset($_GET['verification_id'])) {
         $verification_id = $_GET['verification_id'] ?? '';
 

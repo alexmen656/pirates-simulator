@@ -47,10 +47,12 @@ Known errors & bugs, things that are missing:
 - Dynamic prices of ships _/ //Should be done but I must double check it
 - check ranglist -/
 - music credits page _/
+- finish documentation/tutorial
 
 Checklist before submitting:
 - Enable Music
 - Change Version
+- Add origin control
 
 Next Update(s):
 - Ship Upgrades for more range

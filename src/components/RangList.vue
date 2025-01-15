@@ -53,11 +53,11 @@
     </h4>
     <hr />
     <h4 @click="openStatistics()">
-      Statistics <!--<span class="note">(New tab)</span>-->
+      {{ $t("statistics") }} <!--<span class="note">(New tab)</span>-->
     </h4>
     <hr />
     <h4 @click="openCredits()">
-      Music Credits <span class="note">(New tab)</span>
+      {{ $t("m_credits") }} <span class="note">({{ $t("new_tab") }})</span>
     </h4>
   </div>
 </template>

@@ -16,14 +16,14 @@
     <NewShip class="new-ship-container" />
     <div v-if="showModal" class="modal-overlay" @click="closeModal">
       <div class="modal" @click.stop>
-        <h2>Statistics</h2>
+        <h2>{{ $t("statistics") }}</h2>
         <div>
-          <p v-if="bases[0]?.name">Base: {{ bases[0].name }}</p>
-          <p>Ship Count: {{ shipCount }}</p>
+          <p v-if="bases[0]?.name">{{ $t("base") }}: {{ bases[0].name }}</p>
+          <p>{{ $t("ship_count") }}: {{ shipCount }}</p>
         </div>
-        <h2>Global</h2>
+        <h2>{{ $t("global") }}</h2>
         <div>
-          <p v-if="allBases?.length">Total Bases: {{ allBases.length }}</p>
+          <p v-if="allBases?.length">{{ $t("total_bases") }}: {{ allBases.length }}</p>
         </div>
         <button @click="closeModal">Close</button>
       </div>
@@ -49,7 +49,6 @@ import { addBase } from "@/baseLogic";
 import { eventBus } from "@/eventBus";
 import { getCoinCount, addCoins, subtractCoins } from "@/coinLogic";
 //import axios from "axios";
-
 //import { eventBus } from "@/eventBus";
 
 export default {
@@ -776,7 +775,7 @@ export default {
                 shipStyle
               );
 
-              await subtractCoins(shipPrice);
+              await subtractCoins(shipPrice, "NewShip");
               await updateShipPrice();
               if (this.ships.length == 2) {
                 this.hint = "Now you are ready to go! GLHF!";
@@ -986,7 +985,7 @@ export default {
           goldAnnotations.forEach(async (gold) => {
             if (this.isWithinRadius(ship.coordinate, gold.coordinate, 1000)) {
               console.log("Gold!");
-              await addCoins(100);
+              await addCoins(100, "Gold");
 
               //check
               //gold.color = "#b39700";
@@ -1025,7 +1024,7 @@ export default {
               );
               if (this.isWithinRadius(base.coordinate, gold.coordinate, 2000)) {
                 console.log("Gold!");
-                await addCoins(100);
+                await addCoins(100, "Gold");
 
                 //check
                 //gold.color = "#b39700";
@@ -1065,7 +1064,7 @@ export default {
           goldAnnotations.forEach(async (gold) => {
             if (this.isWithinRadius(ship.coordinate, gold.coordinate, 1000)) {
               console.log("Diamond!");
-              await addCoins(300);
+              await addCoins(300, "Diamond");
 
               //check
               //gold.color = "#b39700";
@@ -1104,7 +1103,7 @@ export default {
               );
               if (this.isWithinRadius(base.coordinate, gold.coordinate, 2000)) {
                 console.log("Diamond!");
-                await addCoins(300);
+                await addCoins(300,"Diamond");
                 //check
                 //gold.color = "#b39700";
                 const MarkerAnnotation = window.mapkit.MarkerAnnotation;
@@ -1138,7 +1137,7 @@ export default {
           );
           goldAnnotations.forEach(async (gold) => {
             if (this.isWithinRadius(ship.coordinate, gold.coordinate, 1000)) {
-              await addCoins(300);
+              await addCoins(20, "Stone");
 
               const MarkerAnnotation = window.mapkit.MarkerAnnotation;
               const new_diamond = new MarkerAnnotation(gold.coordinate, {
@@ -1165,7 +1164,7 @@ export default {
             );
             goldAnnotations.forEach(async (gold) => {
               if (this.isWithinRadius(base.coordinate, gold.coordinate, 2000)) {
-                await addCoins(20);
+                await addCoins(20, "Stone");
                 const MarkerAnnotation = window.mapkit.MarkerAnnotation;
                 const new_diamond = new MarkerAnnotation(gold.coordinate, {
                   title: "New Stone",
@@ -1197,7 +1196,7 @@ export default {
           );
           goldAnnotations.forEach(async (gold) => {
             if (this.isWithinRadius(ship.coordinate, gold.coordinate, 1000)) {
-              await addCoins(300);
+              await addCoins(700, "Emerald");
 
               const MarkerAnnotation = window.mapkit.MarkerAnnotation;
               const new_diamond = new MarkerAnnotation(gold.coordinate, {
@@ -1224,7 +1223,7 @@ export default {
             );
             goldAnnotations.forEach(async (gold) => {
               if (this.isWithinRadius(base.coordinate, gold.coordinate, 2000)) {
-                await addCoins(20);
+                await addCoins(700, "Emerald");
                 const MarkerAnnotation = window.mapkit.MarkerAnnotation;
                 const new_diamond = new MarkerAnnotation(gold.coordinate, {
                   title: "New Emerald",
@@ -1256,7 +1255,7 @@ export default {
           );
           goldAnnotations.forEach(async (gold) => {
             if (this.isWithinRadius(ship.coordinate, gold.coordinate, 1000)) {
-              await addCoins(300);
+              await addCoins(1000, "Ruby");
 
               const MarkerAnnotation = window.mapkit.MarkerAnnotation;
               const new_diamond = new MarkerAnnotation(gold.coordinate, {
@@ -1283,7 +1282,7 @@ export default {
             );
             goldAnnotations.forEach(async (gold) => {
               if (this.isWithinRadius(base.coordinate, gold.coordinate, 2000)) {
-                await addCoins(20);
+                await addCoins(1000, "Ruby");
                 const MarkerAnnotation = window.mapkit.MarkerAnnotation;
                 const new_diamond = new MarkerAnnotation(gold.coordinate, {
                   title: "New Ruby",
