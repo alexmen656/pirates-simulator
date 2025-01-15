@@ -10,6 +10,13 @@
           <span class="author">{{ message.author }}: </span>
           <span class="text">{{ message.message }}</span>
         </div>
+        <button
+          v-if="newMessages"
+          @click="scrollToBottom('button')"
+          class="new-messages-button"
+        >
+          New ↓
+        </button>
       </div>
       <div class="input-container">
         <input
@@ -18,7 +25,7 @@
           :placeholder="$t('lc_input')"
           @keyup.enter="sendMessage"
         />
-        <button @click="sendMessage">{{$t('send')}}</button>
+        <button class="send-btn" @click="sendMessage">{{ $t("send") }}</button>
       </div>
     </div>
   </div>
@@ -31,22 +38,26 @@ export default {
       messages: [],
       newMessage: "",
       ticker: 1,
+      newMessages: false,
     };
   },
-  created() {
-    this.fetchMessages();
+  async created() {
+    await this.fetchMessages();
     setInterval(() => {
       this.fetchMessages();
     }, 1000);
   },
   updated() {
-    this.scrollToBottom();
+    this.scrollToBottom("updated");
   },
   methods: {
-    fetchMessages() {
-      this.$axios
+    async fetchMessages() {
+      await this.$axios
         .get("livechat.php")
         .then((response) => {
+          if (response.data.length > this.messages.length) {
+            this.newMessages = true;
+          }
           this.messages = response.data;
         })
         .catch((error) => {
@@ -62,10 +73,12 @@ export default {
         };
         this.$axios
           .post("livechat.php", message)
-          .then((response) => {
+          .then(async (response) => {
             if (response.data.status === "success") {
-              this.fetchMessages();
-              this.newMessage = "";
+              await this.fetchMessages().then(() => {
+                this.scrollToBottom("button");
+                this.newMessage = "";
+              });
             }
           })
           .catch((error) => {
@@ -73,16 +86,22 @@ export default {
           });
       }
     },
-    scrollToBottom() {
+    scrollToBottom(caller) {
       // Scroll to the bottom of the messages container
-      const container = this.$refs.messagesContainer;
+      if (this.ticker == 1 || caller == "button") {
+        const messagesContainer = this.$el.querySelector(".messages");
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        this.ticker++;
+        this.newMessages = false;
+      }
+      /* const container = this.$refs.messagesContainer;
       if (this.ticker == 1) {
         container.scrollTop = container.scrollHeight;
         this.ticker++;
       }
       setTimeout(() => {
         container.removeAttribute("scrollTop");
-      }, 500);
+      }, 500);*/
     },
   },
 };
@@ -105,6 +124,15 @@ export default {
   flex: 1;
   padding: 5px; /*10*/
   overflow-y: auto;
+}
+
+.new-messages-button {
+  position: absolute;
+  bottom: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 40%;
+  color: red;
 }
 
 .message {
@@ -144,9 +172,12 @@ button {
   margin-left: 8px;
   border: none; /*1px solid #ccc*/
   border-radius: 8px; /*5*/
-  border-bottom-right-radius: 16px;
   background-color: black;
   color: #7f7f7f;
+}
+
+.send-btn {
+  border-bottom-right-radius: 16px;
 }
 
 .author,

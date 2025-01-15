@@ -52,7 +52,7 @@ export async function addCoins(amount, description) {
   let delay;
 
   if (description != "NewShip") {
-    delay = 500 * timeSwitcher;
+    delay = 750 * timeSwitcher;
     if (timeSwitcher === 1) {
       timeSwitcher = 2;
     } else if (timeSwitcher === 2) {

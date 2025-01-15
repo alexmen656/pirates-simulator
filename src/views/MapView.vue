@@ -23,7 +23,9 @@
         </div>
         <h2>{{ $t("global") }}</h2>
         <div>
-          <p v-if="allBases?.length">{{ $t("total_bases") }}: {{ allBases.length }}</p>
+          <p v-if="allBases?.length">
+            {{ $t("total_bases") }}: {{ allBases.length }}
+          </p>
         </div>
         <button @click="closeModal">Close</button>
       </div>
@@ -48,6 +50,7 @@ import {
 import { addBase } from "@/baseLogic";
 import { eventBus } from "@/eventBus";
 import { getCoinCount, addCoins, subtractCoins } from "@/coinLogic";
+import JSConfetti from "js-confetti";
 //import axios from "axios";
 //import { eventBus } from "@/eventBus";
 
@@ -1103,7 +1106,7 @@ export default {
               );
               if (this.isWithinRadius(base.coordinate, gold.coordinate, 2000)) {
                 console.log("Diamond!");
-                await addCoins(300,"Diamond");
+                await addCoins(300, "Diamond");
                 //check
                 //gold.color = "#b39700";
                 const MarkerAnnotation = window.mapkit.MarkerAnnotation;
@@ -1268,6 +1271,13 @@ export default {
               setTimeout(() => {
                 map.removeAnnotation(new_diamond);
               }, 3000);
+              const jsConfetti = new JSConfetti();
+              // jsConfetti.addConfetti();
+              jsConfetti.addConfetti({
+                emojis: ["♦️"],
+                emojiSize: 100,
+                confettiNumber: 100,
+              });
             }
           });
         }
