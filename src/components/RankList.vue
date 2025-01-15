@@ -52,12 +52,22 @@
       >
     </h4>
     <hr />
-    <h4 @click="openStatistics()">
-      {{ $t("statistics") }} <!--<span class="note">(New tab)</span>-->
-    </h4>
-    <hr />
     <h4 @click="openCredits()">
       {{ $t("m_credits") }} <span class="note">({{ $t("new_tab") }})</span>
+    </h4>
+    <hr />
+    <h4 @click="openDocumentation()">
+      {{ $t("documentation") }}
+      <span class="note">(New tab)</span>
+    </h4>
+    <hr />
+    <h4 @click="openStatistics()">
+      {{ $t("statistics") }}
+      <!--<span class="note">(New tab)</span>-->
+    </h4>
+    <hr />
+    <h4 @click="logOut()">
+      {{ $t("logout") }}
     </h4>
   </div>
 </template>
@@ -120,12 +130,29 @@ export default {
         console.error("Error fetching top users:", error);
       }
     },
+    openDocumentation() {
+      window.open("/documentation", "_blank");
+    },
     openCredits() {
       window.open("/credits", "_blank");
     },
-    openStatistics(){
+    openStatistics() {
       eventBus.emit("openStatistics");
-    }
+    },
+    logOut() {
+      if (
+        confirm(
+          "Are you sure you want to log out?\nYou will lose access to this account!"
+        )
+      ) {
+        localStorage.removeItem("username");
+        localStorage.removeItem("verification_id");
+        localStorage.removeItem("shipCount");
+        localStorage.removeItem("goldCoins");
+        localStorage.removeItem("base");
+        this.$router.push("/");
+      }
+    },
   },
 };
 </script>

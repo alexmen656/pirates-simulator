@@ -60,7 +60,7 @@ if ($method === 'POST') {
     $stmt->bind_param("isdd", $user_id, $name, $coordinate_x, $coordinate_y);
 
     if ($stmt->execute()) {
-        $message = "User $user_name has created a new base called $name";
+        $message = "Player '$user_name' has established a new base called '$name'.";
         $sql = "INSERT INTO chat_messages (author, message, type) VALUES ('System', '$message', 'system')";
         if ($conn->query($sql) === TRUE) {
             echo json_encode(['success' => 'Base created successfully']);

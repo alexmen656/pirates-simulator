@@ -18,6 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Check if username already exists
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($count > 0) {
+        echo json_encode(['error' => 'Username is already taken']);
+        exit;
+    }
+
     $verification_id = generateUniqueId();
 
     $stmt = $conn->prepare("INSERT INTO users (verification_id, username) VALUES (?, ?)");

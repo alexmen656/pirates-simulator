@@ -28,7 +28,7 @@ export default {
     // this.playBackgroundMusic();
   },
   methods: {
-    /* startMusicOnInteraction() {
+    startMusicOnInteraction() {
       if (!this.musicStarted) {
         this.playBackgroundMusic();
         this.musicStarted = true;
@@ -40,7 +40,7 @@ export default {
       const audio = this.$refs.backgroundMusic;
       audio.volume = 0.1; // Start at 10% volume
       audio
-     //   .play()
+        .play()
         .then(() => {
           this.fadeIn(audio);
         })
@@ -55,7 +55,7 @@ export default {
           // this.fadeOut(audio, timeLeft * 1000);
         }
       });
-    },*/
+    },
     fadeIn(audio) {
       const step = 0.1 / (this.fadeDuration / 100); // Calculate the step size for each interval
       const interval = setInterval(() => {

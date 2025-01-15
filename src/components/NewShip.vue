@@ -1,18 +1,22 @@
 <template>
-<div class="new-ship-container">
+  <div class="new-ship-container">
     <div class="music-container">
       <button class="place-boat-button" @click="toggleMusic">
-        <span style="display: block; height: 28px;"> {{ isMusicPlaying ? "🔊" : "🔇" }}</span>
+        <span style="display: block; height: 28px">
+          {{ isMusicPlaying ? "🔊" : "🔇" }}</span
+        >
       </button>
     </div>
     <div class="tooltip-container">
       <button class="place-boat-button">
-  <span>     +{{ $t('ship') }} (${{ formattedShipPrice }})</span> 
+        <span> +{{ $t("ship") }} (${{ formattedShipPrice }})</span>
         <!-- <img src="@/assets/boat-icon.png" alt="Place Boat" class="boat-icon" />-->
       </button>
       <span class="tooltip-text"
-        >You can place a boat with Alt+Click. A ship costs {{ formattedShipPrice }} coins. If you
-        have enough, it will be placed. If not, it won't be placed.</span
+        ><h2>ALT/OPTION + CLICK</h2>
+        <br />{{
+          $t("ship_info", { formattedShipPrice: formattedShipPrice })
+        }}</span
       >
     </div>
   </div>
@@ -25,20 +29,22 @@ export default {
   data() {
     return {
       coinCount: 0,
-      isMusicPlaying: false,
+      isMusicPlaying: true,
       shipPrice: 750,
     };
   },
   computed: {
     formattedShipPrice() {
       return this.shipPrice.toLocaleString();
-    }
+    },
   },
   mounted() {
     this.coinCount = localStorage.getItem("goldCoins") ?? 0;
     eventBus.on("updateGoldCoins", this.updateCoinCount);
     eventBus.on("shipPriceUpdated", this.updateShipPrice);
     updateShipPrice();
+    this.checkMusicStatus();
+    document.addEventListener("mousemove", this.checkMusicStatus);
   },
   beforeUnmount() {
     eventBus.off("updateGoldCoins", this.updateCoinCount);
@@ -60,6 +66,12 @@ export default {
           audio.play();
         }
         this.isMusicPlaying = !this.isMusicPlaying;
+      }
+    },
+    checkMusicStatus() {
+      const audio = document.querySelector("audio");
+      if (audio) {
+        this.isMusicPlaying = !audio.paused;
       }
     },
   },
@@ -106,7 +118,7 @@ button {
 
 .tooltip-text {
   visibility: hidden;
-  width: 220px;
+  width: 350px;
   background-color: #555;
   color: #fff;
   text-align: center;
@@ -114,9 +126,9 @@ button {
   padding: 5px 0;
   position: absolute;
   z-index: 1;
-  top: 125%; /* Position the tooltip below the button */
+  top: 125%;
   left: 100%;
-  margin-left: -210px; /* Use half of the width (220/2 = 110), to center the tooltip */
+  margin-left: -210px;
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -124,5 +136,10 @@ button {
 .tooltip-container:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
+}
+
+h2 {
+  margin: 0;
+  padding-top: 10px;
 }
 </style>

@@ -8,7 +8,7 @@
       <TopHint v-if="hint" :hint="'...' + hint" />
     </header>
     <div id="map" style="width: 100%; height: 100vh"></div>
-    <RangList class="rang-list" />
+    <RankList class="rang-list" />
     <!--<div class="map-legend"></div>-->
     <LiveChat class="live-chat2" />
     <!--  <BottomHint :hint="hint" />-->
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import RangList from "@/components/RangList.vue";
+import RankList from "@/components/RankList.vue";
 import LiveChat from "@/components/LiveChat.vue";
 //import BottomHint from "@/components/BottomHint.vue";
 import TopHint from "@/components/TopHint.vue";
@@ -57,7 +57,7 @@ import JSConfetti from "js-confetti";
 export default {
   name: "App",
   components: {
-    RangList,
+    RankList,
     LiveChat,
     //  BottomHint,
     TopHint,
@@ -502,12 +502,12 @@ export default {
             Number(base.coordinate_x),
             Number(base.coordinate_y)
           );
-          const annotation = new window.mapkit.MarkerAnnotation(coordinate, {
-            title: base.name,
-            subtitle: base.user_name + "'s base",
-            color: "#808080",
-            glyphText: "☠️",
-          });
+          const annotation = new window.mapkit.MarkerAnnotation(coordinate);
+          annotation.title = base.name;
+          annotation.subtitle = base.user_name + "'s base";
+          annotation.color = "#808080";
+          annotation.glyphText = "☠️";
+
           map.addAnnotation(annotation);
         });
       }
@@ -528,7 +528,7 @@ export default {
           this.blockNewCities = true;
         } else {
           this.hint =
-            "Place your base by holding Shift and then clicking anywhere on the land.";
+            "Place your base by holding Shift and then clicking anywhere."; //on the land.";
         }
         this.bases.forEach((base) => {
           const coordinate = new window.mapkit.Coordinate(
@@ -569,7 +569,7 @@ export default {
 
         if (this.ships.length == 0 && this.blockNewCities) {
           this.hint =
-            "Place your ships by holding the alt key and klick anywhere on the sea. (2 ships)";
+            "Place your ships by holding the alt key and klick anywhere. (2 ships)"; // on the sea
         }
 
         this.ships.forEach((ship) => {
@@ -784,7 +784,7 @@ export default {
                 this.hint = "Now you are ready to go! GLHF!";
               } else if (this.ships.length == 1) {
                 this.hint =
-                  "Place your ships by holding the alt key and klick anywhere on the sea. (1 ship)";
+                  "Place your ships by holding the alt key and klick anywhere. (1 ship)"; // on the sea.
               }
 
               if (localStorage.getItem("shipCount")) {
@@ -847,7 +847,7 @@ export default {
               );
 
               this.hint =
-                "Great your base was build! Place your ships by holding the alt key and klick anywhere on the sea. (2 ships)";
+                "Great your base was build! Place your ships by holding the alt key and klick anywhere. (2 ships)"; // on the sea
               console.log(this.hint);
               this.blockNewCities = true;
             } /*else {
@@ -961,6 +961,7 @@ export default {
           ),
           options
         );
+
         map.addAnnotation(annotation);
 
         // Annotation nach 30 Sekunden entfernen
@@ -1276,7 +1277,7 @@ export default {
               jsConfetti.addConfetti({
                 emojis: ["♦️"],
                 emojiSize: 100,
-                confettiNumber: 100,
+                confettiNumber: 10,
               });
             }
           });

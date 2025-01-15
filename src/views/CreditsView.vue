@@ -22,31 +22,31 @@ export default {};
   position: relative;
   background-image: url("@/bg.png");
   background-size: cover;
-  min-height: 100vh; /* Ensure the container takes at least the full viewport height */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   font-size: 1.5rem;
-  overflow-y: auto; /* Ensure the content is scrollable */
+  overflow-y: auto;
 }
 
 .overlay {
-  position: fixed; /* Use fixed positioning to cover the entire viewport */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* Dark overlay with 70% opacity */
+  background-color: rgba(0, 0, 0, 0.7);
   z-index: 1;
 }
 
 .content {
   position: relative;
   z-index: 2;
-  color: white; /* Ensure text is readable on dark overlay */
+  color: white;
   padding: 20px;
-  max-width: 800px; /* Optional: limit the width of the content for better readability */
+  max-width: 800px;
 }
 </style>
