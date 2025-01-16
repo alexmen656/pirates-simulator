@@ -24,7 +24,7 @@
         resources within its reach. You can view this on the map, where the
         ships' radius is marked in green and the base's radius in blue.
       </p>
-
+      <hr />
       <h2>Resources</h2>
       <ul>
         <li><strong>Ruby:</strong> 1000 Coins, spawn rate: 1% (1 in 100)</li>
@@ -35,6 +35,12 @@
         <li><strong>Gold:</strong> 100 Coins, spawn rate: 50% (50 in 100)</li>
         <li><strong>Stone:</strong> 20 Coins, spawn rate: 30% (30 in 100)</li>
       </ul>
+      <hr />
+      <h2>How often do resources spawn?</h2>
+      <p>
+        Every 1.5 seconds, a new resource spawns. If a resource is not collected
+        within 30 seconds, it will disappear forever!
+      </p>
       <hr />
       <h2>Ships</h2>
       <ul>

@@ -45,17 +45,21 @@ export async function addCoins(amount, description) {
     currentCount = parseInt(currentCount);
     currentCount += amount;
     updateCoinCount(currentCount);
-  }else{
+  } else {
     localStorage.setItem("goldCoins", amount);
   }
 
   let delay;
 
   if (description != "NewShip") {
-    delay = 750 * timeSwitcher;
+    delay = 1400 * timeSwitcher;
     if (timeSwitcher === 1) {
       timeSwitcher = 2;
     } else if (timeSwitcher === 2) {
+      timeSwitcher = 3;
+    } else if (timeSwitcher === 3) {
+      timeSwitcher = 4;
+    } else if (timeSwitcher === 4) {
       timeSwitcher = 1;
     }
   } else {

@@ -782,6 +782,9 @@ export default {
               await updateShipPrice();
               if (this.ships.length == 2) {
                 this.hint = "Now you are ready to go! GLHF!";
+                setTimeout(() => {
+                  this.hint = "";
+                }, 10000);
               } else if (this.ships.length == 1) {
                 this.hint =
                   "Place your ships by holding the alt key and klick anywhere. (1 ship)"; // on the sea.

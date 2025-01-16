@@ -39,12 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get the user ID of the newly registered user
         $user_id = $stmt->insert_id;
 
-        // Insert the coin transaction -> User gets free 1500 coins
-        $amount = 1500;
+        // Insert the coin transaction -> User gets free 5000 coins
+        $amount = 5000;
         $stmt = $conn->prepare("INSERT INTO coins (user_id, amount) VALUES (?, ?)");
         $stmt->bind_param("ii", $user_id, $amount);
         if ($stmt->execute()) {
-            $message = "User $user_name has created a new base called $name";
+            $message = "Welcome ".$username."! You have received 5000 coins for joining the game!";
             $sql = "INSERT INTO chat_messages (author, message, type) VALUES ('System', '$message', 'system')";
             if ($conn->query($sql) === TRUE) {
                 echo json_encode(['verification_id' => $verification_id]);
