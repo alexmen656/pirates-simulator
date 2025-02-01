@@ -53,7 +53,12 @@ Pirates Simulator is a multiplayer strategy game where players build bases, depl
 
 ## Feedback
 - If you have any feedback, feel free to contact me via Slack.
-  
+
+## Screenshots
+![Gameplay](screenshots/1.jpg)
+![Gameplay](screenshots/2.jpg)
+![Gameplay](screenshots/3.jpg)
+
 ## Project setup
 ```
 npm install
