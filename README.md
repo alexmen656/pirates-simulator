@@ -1,6 +1,9 @@
 # Pirates Simulator
 Pirates Simulator is a multiplayer strategy game where players build bases, deploy ships, and collect resources to compete for the top spot on the leaderboard. With dynamic mechanics, such as increasing costs and rare resources, players must strategize to optimize their progress. The game is designed for real-time interaction and provides an engaging, competitive experience.
 
+## Demo
+[https://alex.polan.sk/](https://alex.polan.sk/)
+
 ## Features
 - Dynamic Base Placement: Players can strategically place their base on the map to collect resources within a 2000KM radius.
 - Resource Collection System: Includes common resources like Gold and Stones, as well as rare resources like Diamonds, Emeralds, and Rubies.
