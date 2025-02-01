@@ -55,6 +55,7 @@ Pirates Simulator is a multiplayer strategy game where players build bases, depl
 - If you have any feedback, feel free to contact me via Slack.
 
 ## Screenshots
+![Registration](screenshots/4.jpg)
 ![Gameplay](screenshots/1.jpg)
 ![Gameplay](screenshots/2.jpg)
 ![Gameplay](screenshots/3.jpg)
